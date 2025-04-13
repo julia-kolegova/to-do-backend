@@ -66,3 +66,24 @@ async def refresh_jwt_token(
 
     if not token:
         raise HTTPException(status_code=401, detail="Credentials are not provided")
+
+
+async def get_jwt_token(
+        jwt_token: Optional[str] = Header(..., description="jwt only"),
+        credentials: Optional[JwtAuthorizationCredentials] = Security(access_security)
+) -> dict:
+    token = None
+
+    if credentials:
+        return credentials
+
+    if jwt_token:
+        try:
+            credentials = python_jose_jwt_backend.decode(token=jwt_token, secret_key=settings.jwt_secret_key)
+            return credentials['subject']
+        except Exception as e:
+            logging.error(e)
+            raise HTTPException(status_code=401, detail=str(e))
+
+    if not token:
+        raise HTTPException(status_code=401, detail="Credentials are not provided")

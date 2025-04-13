@@ -34,8 +34,26 @@ class UserCrud(DBOperations):
 
         return user
 
-    async def update_user(self):
-        pass
+    async def update_user(
+            self,
+            user_id: UUID,
+            name: str = None,
+            email: str = None,
+            password: str = None
+    ):
+        user = await self.get_user(user_id=user_id)
+
+        if name is not None:
+            user.name = name
+        if email is not None:
+            user.email = email
+        if password is not None:
+            user.password = password
+
+        await self.db_update()
+        await self.refresh(user)
+
+        return user
 
 
 user_crud = UserCrud()
