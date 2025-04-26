@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  external-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: netology-prototype:stage
+    container_name: netology-prototype-stage-api
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    restart: always
