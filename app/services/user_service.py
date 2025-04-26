@@ -2,15 +2,15 @@ from uuid import UUID
 from fastapi.exceptions import HTTPException
 
 from app.models.models import User
-from app.crud.user_crud import user_crud
+from app.crud.user_crud import UserCrud
 
-from app.services.password_service import password_service
+from app.services.password_service import PasswordService
 
 from app.schemas.user_schema import UserSchema
 
 
 class UserService:
-    def __init__(self):
+    def __init__(self, password_service: PasswordService, user_crud: UserCrud):
         self._password_service = password_service
         self._user_crud = user_crud
 
@@ -37,7 +37,7 @@ class UserService:
         if user is not None:
             raise HTTPException(status_code=400, detail="User already exists")
 
-        hash_password = password_service.hash_password(password=password)
+        hash_password = self._password_service.hash_password(password=password)
 
         user = await self._user_crud.create_user(name=name, email=email, password=hash_password)
 
@@ -54,7 +54,7 @@ class UserService:
     async def login_user(self, email: str, password: str):
         user = await self._user_crud.get_user(email=email)
 
-        hash_password = password_service.hash_password(password=password)
+        hash_password = self._password_service.hash_password(password=password)
         if hash_password != user.password:
             raise HTTPException(status_code=400, detail="Incorrect credentials")
 
@@ -80,7 +80,7 @@ class UserService:
         if old_password != confirm_old_password:
             raise HTTPException(status_code=400, detail="Password don`t match")
 
-        old_hash_password = password_service.hash_password(password=old_password)
+        old_hash_password = self._password_service.hash_password(password=old_password)
         user = await self._user_crud.get_user(user_id=user_id)
 
         if old_hash_password != user.password:
@@ -89,7 +89,7 @@ class UserService:
         if new_password == old_password:
             raise HTTPException(status_code=400, detail="Old password and new password are equal")
 
-        new_hash_password = password_service.hash_password(password=new_password)
+        new_hash_password = self._password_service.hash_password(password=new_password)
 
         updated_user = await self._user_crud.update_user(user_id=user_id, password=new_hash_password)
         return self.__user_model_to_schema(user_model=updated_user)

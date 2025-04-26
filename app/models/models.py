@@ -31,7 +31,7 @@ class Task(Base):
 
     id = Column(UUID, primary_key=True)
     user_id = Column(UUID, ForeignKey('user.id', ondelete='CASCADE'))
-    task_type_id = Column(UUID, ForeignKey('task_type.id', ondelete='CASCADE'))
+    task_type_id = Column(UUID, ForeignKey('task_type.id', ondelete='CASCADE'), nullable=True)
     name = Column(String, nullable=False)
     priority = Column(Enum(Priority), nullable=False, default=Priority.NAN)
     created_at = Column(DateTime, nullable=False, default=datetime.now())

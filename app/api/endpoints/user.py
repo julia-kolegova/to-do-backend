@@ -10,9 +10,9 @@ from app.schemas.user_schema import (
     UserUpdatePasswordRequest
 )
 
-from app.services.user_service import UserService
+from app.depends import get_user_service
 
-user_service = UserService()
+user_service = get_user_service()
 
 user_router = APIRouter(prefix='/users')
 user_router.tags = ["User"]

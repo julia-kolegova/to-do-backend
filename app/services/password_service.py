@@ -22,6 +22,3 @@ class PasswordService:
         hash_object = sha256()
         hash_object.update(password.encode())
         return hash_object.hexdigest()
-
-
-password_service = PasswordService()
