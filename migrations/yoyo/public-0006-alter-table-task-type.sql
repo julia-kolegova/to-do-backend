@@ -1,0 +1,2 @@
+ALTER TABLE "task_type"
+ADD COLUMN user_id UUID REFERENCES "user"(id) ON DELETE CASCADE;

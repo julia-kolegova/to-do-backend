@@ -23,6 +23,7 @@ class TaskType(Base):
 
     id = Column(UUID, primary_key=True)
     type_name = Column(String, nullable=False)
+    user_id = Column(UUID, ForeignKey('user.id', ondelete='CASCADE'))
 
 
 class Task(Base):
