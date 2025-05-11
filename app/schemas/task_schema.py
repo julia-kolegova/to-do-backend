@@ -1,10 +1,11 @@
 from datetime import datetime
-from uuid import UUID, uuid4
+from uuid import UUID
 from typing import Optional
 
 from pydantic import BaseModel
 
 from app.models.task_priority_enum import Priority
+from app.models.task_status_enum import TaskStatus
 
 
 class CreateTaskSchema(BaseModel):
@@ -13,7 +14,6 @@ class CreateTaskSchema(BaseModel):
     priority: Priority
     date_start: datetime
     date_end: datetime
-    solved: bool = False
 
 
 class TaskSchema(BaseModel):
@@ -25,4 +25,4 @@ class TaskSchema(BaseModel):
     created_at: datetime
     date_start: datetime
     date_end: datetime
-    solved: bool = False
+    status: TaskStatus

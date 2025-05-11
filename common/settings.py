@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     # default subscription period in days
     period: int = 30
 
+    # logger
+    sql_echo: bool = False  # True для отладки SQL-запросов
+
     # postgres settings
     db_host: str = os.getenv("DB_HOST")
     db_port: str = os.getenv("DB_PORT")
@@ -18,7 +21,7 @@ class Settings(BaseSettings):
 
     db_connection_rout: str = f"{db_user}:{db_password}@{db_host}:{db_port}/{db_main_database}"
 
-    sql_alchemy_connection_url: str = f"postgresql+psycopg2://{db_connection_rout}"
+    sql_alchemy_connection_url: str = f"postgresql+asyncpg://{db_connection_rout}"
 
     # jwt settings
     jwt_secret_key: str = os.getenv("JWT_SECRET_KEY")

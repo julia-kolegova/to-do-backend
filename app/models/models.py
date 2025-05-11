@@ -1,13 +1,11 @@
 from datetime import datetime
 
-from sqlalchemy import Column, String, ForeignKey, DateTime, Enum, Boolean
+from sqlalchemy import Column, String, ForeignKey, DateTime, Enum
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.ext.declarative import declarative_base
 
+from app.database import Base
 from app.models.task_priority_enum import Priority
 from app.models.task_status_enum import TaskStatus
-
-Base = declarative_base()
 
 
 class User(Base):

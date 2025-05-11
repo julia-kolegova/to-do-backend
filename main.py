@@ -8,14 +8,14 @@ if os.path.exists('.env'):
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi_sqlalchemy import DBSessionMiddleware
 
 from common.settings import settings
 from app.api.routers import api_router
+from app.database import AsyncDBSessionMiddleware
 from yoyo import get_backend, read_migrations
 
 
-backend = get_backend(settings.sql_alchemy_connection_url.replace("+psycopg2", ""))
+backend = get_backend(settings.sql_alchemy_connection_url.replace("+asyncpg", ""))
 migrations = read_migrations('./migrations/yoyo')
 with backend.lock():
     backend.apply_migrations(backend.to_apply(migrations))
@@ -23,8 +23,7 @@ with backend.lock():
 app = FastAPI(openapi_prefix="/api")
 
 app.add_middleware(
-    DBSessionMiddleware,
-    db_url=settings.sql_alchemy_connection_url,
+    AsyncDBSessionMiddleware
 )
 app.add_middleware(
     CORSMiddleware,

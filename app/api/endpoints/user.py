@@ -1,6 +1,11 @@
 from fastapi import APIRouter, Depends
-from app.api.jwt import access_security, refresh_security, get_jwt_token, refresh_jwt_token
 
+from app.api.jwt import (
+    access_security,
+    refresh_security,
+    get_jwt_token,
+    refresh_jwt_token
+)
 from app.schemas.user_schema import (
     CreateUserSchema,
     AuthUser,
@@ -9,17 +14,19 @@ from app.schemas.user_schema import (
     UserUpdateRequest,
     UserUpdatePasswordRequest
 )
-
+from app.services.user_service import UserService
 from app.depends import get_user_service
 
-user_service = get_user_service()
 
 user_router = APIRouter(prefix='/users')
 user_router.tags = ["User"]
 
 
 @user_router.post('/', response_model=AuthUser)
-async def create_user(new_user: CreateUserSchema):
+async def create_user(
+        new_user: CreateUserSchema,
+        user_service: UserService = Depends(get_user_service)
+):
     user = await user_service.create_user(
         name=new_user.name,
         email=new_user.email,
@@ -40,14 +47,20 @@ async def create_user(new_user: CreateUserSchema):
 
 
 @user_router.get('/', response_model=UserSchema)
-async def get_user(credentials: dict = Depends(get_jwt_token)):
+async def get_user(
+        credentials: dict = Depends(get_jwt_token),
+        user_service: UserService = Depends(get_user_service)
+):
     user_id = credentials["id"]
     user = await user_service.get_user(user_id=user_id)
     return user
 
 
 @user_router.post('/login', response_model=AuthUser)
-async def login_user(user: UserLoginRequest):
+async def login_user(
+        user: UserLoginRequest,
+        user_service: UserService = Depends(get_user_service)
+):
     user = await user_service.login_user(email=user.email, password=user.password)
 
     subject = {"id": str(user.id)}
@@ -63,14 +76,22 @@ async def login_user(user: UserLoginRequest):
 
 
 @user_router.patch('/', response_model=UserSchema)
-async def update_user(new_user_data: UserUpdateRequest, credentials: dict = Depends(get_jwt_token)):
+async def update_user(
+        new_user_data: UserUpdateRequest,
+        credentials: dict = Depends(get_jwt_token),
+        user_service: UserService = Depends(get_user_service)
+):
     user_id = credentials["id"]
     user = await user_service.update_user(user_id=user_id, email=new_user_data.email, name=new_user_data.name)
     return user
 
 
 @user_router.patch('/password', response_model=UserSchema)
-async def update_user_password(new_password: UserUpdatePasswordRequest, credentials: dict = Depends(get_jwt_token)):
+async def update_user_password(
+        new_password: UserUpdatePasswordRequest,
+        credentials: dict = Depends(get_jwt_token),
+        user_service: UserService = Depends(get_user_service)
+):
     user_id = credentials["id"]
 
     updated_user = await user_service.update_user_password(
