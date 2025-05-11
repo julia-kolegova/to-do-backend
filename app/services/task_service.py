@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 from datetime import datetime
 import logging
@@ -6,6 +6,8 @@ import logging
 from app.repository.task_repository import TaskRepository
 from app.schemas.task_schema import CreateTaskSchema, TaskSchema
 from app.models.models import Task
+from app.models.task_status_enum import TaskStatus
+from app.models.task_priority_enum import Priority
 
 
 class TaskService:
@@ -37,15 +39,46 @@ class TaskService:
         new_task = await self._task_repository.save(entity=task_model)
         return self.__map_task_model_to_schema(task=new_task)
 
-    async def update_task(self) -> TaskSchema:
-        pass
+    async def update_task(
+            self,
+            task_id: UUID,
+            task_type_id: Optional[UUID] = None,
+            name: Optional[str] = None,
+            priority: Optional[Priority] = None,
+            date_start: Optional[datetime] = None,
+            date_end: Optional[datetime] = None,
+            status: Optional[TaskStatus] = None
+    ) -> TaskSchema:
+        data = {}
 
-    async def get_task(self) -> TaskSchema:
-        pass
+        if task_type_id is not None:
+            data["task_type_id"] = task_type_id
+        if name is not None:
+            data["name"] = name
+        if priority is not None:
+            data["priority"] = priority
+        if date_start is not None:
+            data["date_start"] = date_start
+        if date_end is not None:
+            data["date_end"] = date_end
+        if date_start is not None:
+            data["status"] = status
 
-    async def get_user_task_list(self, user_id: UUID) -> List[TaskSchema]:
+        updated_task = await self._task_repository.update(entity_id=task_id, data=data)
+        return self.__map_task_model_to_schema(task=updated_task)
+
+    async def get_user_task_list(
+            self,
+            user_id: UUID,
+            status: TaskStatus,
+            task_type_id: Optional[UUID] = None
+    ) -> List[TaskSchema]:
         task_list = []
-        tasks = await self._task_repository.find_all_by_user_id(user_id=user_id)
+        tasks = await self._task_repository.find_all_by_user_id_and_status_and_task_type_id(
+            user_id=user_id,
+            status=status,
+            task_type_id=task_type_id
+        )
 
         for task in tasks:
             task_list.append(self.__map_task_model_to_schema(task=task))
