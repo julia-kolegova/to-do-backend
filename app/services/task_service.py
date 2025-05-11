@@ -40,5 +40,11 @@ class TaskService:
     async def get_task(self) -> TaskSchema:
         pass
 
-    async def get_user_task_list(self) -> List[TaskSchema]:
-        pass
+    async def get_user_task_list(self, user_id: UUID) -> List[TaskSchema]:
+        task_list = []
+        tasks = await self._task_crud.get_all_users_task(user_id=user_id)
+
+        for task in tasks:
+            task_list.append(self.__map_task_model_to_schema(task=task))
+
+        return task_list

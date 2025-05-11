@@ -5,6 +5,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 
 from app.models.task_priority_enum import Priority
+from app.models.task_status_enum import TaskStatus
 
 Base = declarative_base()
 
@@ -37,5 +38,5 @@ class Task(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.now())
     date_start = Column(DateTime, nullable=False, default=datetime.now())
     date_end = Column(DateTime, nullable=False, default=datetime.now())
-    solved = Column(Boolean, nullable=False, default=False)
+    status = Column(Enum(TaskStatus), nullable=False, default=TaskStatus.ACTIV)
     
