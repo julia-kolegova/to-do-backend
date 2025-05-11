@@ -11,4 +11,3 @@ down-prod:
 
 run-prod:
 	docker-compose -f docker-compose.yml up -d --build
-	docker-compose -f docker-compose.yml exec -T netology-prototype-stage-api sh -c "sleep 10 && alembic upgrade head"
