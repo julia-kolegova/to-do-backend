@@ -59,7 +59,7 @@ class AsyncDBSessionMiddleware(BaseHTTPMiddleware):
         self,
         app: ASGIApp,
         session_args: Dict = None,
-        commit_on_exit: bool = False,
+        commit_on_exit: bool = False
     ):
         super().__init__(app)
 
